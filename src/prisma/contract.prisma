@@ -1,0 +1,81 @@
+// use prisma-8
+
+enum PollStatus {
+  @@type("pg/text@1")
+  DRAFT  = "draft"
+  OPEN   = "open"
+  CLOSED = "closed"
+}
+
+enum PollVisibility {
+  @@type("pg/text@1")
+  PUBLIC   = "public"
+  UNLISTED = "unlisted"
+  PRIVATE  = "private"
+}
+
+enum VotingMode {
+  @@type("pg/text@1")
+  ANYONE         = "anyone"
+  LOGIN_REQUIRED = "login_required"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  username  String?
+  name      String?
+  passwordHash String?
+  createdAt TimestamptzString @default(now())
+  updatedAt TimestamptzString  @default(now())
+  polls Poll[]
+  votes Vote[]
+}
+
+model Poll {
+  id          Int      @id @default(autoincrement())
+  question    String
+  description String?
+  slug        String   @unique
+  status     PollStatus     @default(DRAFT)
+  visibility PollVisibility @default(PUBLIC)
+  votingMode VotingMode     @default(ANYONE)
+  expiresAt TimestamptzString?
+  createdAt TimestamptzString @default(now())
+  updatedAt TimestamptzString  @default(now()) 
+  creatorId Int
+  creator User @relation(fields: [creatorId], references: [id])
+  options PollOption[]
+  votes Vote[]
+}
+
+
+model PollOption {
+  id        Int               @id @default(autoincrement())
+  text      String
+  position  Int
+  createdAt TimestamptzString @default(now())
+  pollId Int
+  poll   Poll @relation(fields: [pollId], references: [id])
+
+  @@unique([id, pollId])
+  votes Vote[]
+}
+
+
+model Vote {
+  id        Int               @id @default(autoincrement())
+  createdAt TimestamptzString @default(now())
+
+  pollId   Int
+  optionId Int
+  userId   Int?
+  voterToken String?
+
+  poll   Poll       @relation(fields: [pollId], references: [id])
+  option PollOption @relation(fields: [optionId, pollId], references: [id, pollId])
+  user   User?      @relation(fields: [userId], references: [id])
+
+  @@unique([pollId, userId])
+  @@unique([pollId, voterToken])
+@@check(expression: sql`(('userId' IS NOT NULL)::int + ('voterToken' IS NOT NULL)::int) = 1`, name: "vote_identity_exactly_one")}
