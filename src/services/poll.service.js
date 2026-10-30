@@ -1,6 +1,6 @@
 import {db} from './../prisma/db';
 import { appError } from './../lib/errors';
-import { isValidPoll } from './../lib/validators';
+import { isValidPoll, isValidPollStatus } from './../lib/validators';
 import crypto from 'crypto';
 
 export const createPoll = async (creatorId, data) => {
@@ -33,3 +33,36 @@ export const createPoll = async (creatorId, data) => {
 
 	return newPoll;
 }
+
+export const updatePollStatus = async (creatorId, slug, newStatus) => {
+	// 1. Normalize status to lowercase (since DB constraint expects lowercase)
+	const normalizedStatus = typeof newStatus === 'string' ? newStatus.toLowerCase() : '';
+
+	if (!isValidPollStatus(normalizedStatus)) {
+		throw appError('INVALID_STATUS', 'Status must be open or closed');
+	}
+
+	// 2. Find the poll by slug
+	const poll = await db.orm.public.Poll
+		.where({ slug: slug })
+		.first();
+
+	if (!poll) {
+		throw appError('POLL_NOT_FOUND', 'Poll not found');
+	}
+
+	// 3. Check ownership
+	if (poll.creatorId !== creatorId) {
+		throw appError('FORBIDDEN', 'You are not the creator of this poll');
+	}
+
+	// 4. Update the poll status
+	const updatedPoll = await db.orm.public.Poll
+		.where({ slug: slug })
+		.update({
+			status: normalizedStatus,
+			updatedAt: new Date().toISOString() // or whatever format your TimestamptzString expects
+		});
+
+	return updatedPoll;
+};

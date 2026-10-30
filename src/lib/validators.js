@@ -27,3 +27,8 @@ export function isValidPoll({ question, options }) {
 
   return true;
 }
+
+export function isValidPollStatus(status) {
+  const allowedStatuses = ['open', 'closed'];
+  return allowedStatuses.includes(status);
+}
