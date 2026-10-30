@@ -16,3 +16,14 @@ export function normalizeName(name) {
   const trimmed = name.trim()
   return trimmed.length === 0 ? null : trimmed
 }
+
+export function isValidPoll({ question, options }) {
+  if (typeof question !== 'string' || question.trim().length === 0) return false;
+  if (!Array.isArray(options) || options.length < 2) return false;
+
+  // Check if all options are non-empty strings
+  const hasEmptyOption = options.some(opt => typeof opt !== 'string' || opt.trim().length === 0);
+  if (hasEmptyOption) return false;
+
+  return true;
+}
