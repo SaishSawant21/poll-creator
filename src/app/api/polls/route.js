@@ -1,25 +1,15 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { verifyToken } from "../../../lib/auth-token"; // Check your relative path
-import { createPoll } from "../../../services/poll.service"; // Check your relative path
+import { withAuth } from "../../../lib/with-auth";
+import { createPoll } from "../../../services/poll.service"; 
 
 const STATUS_BY_CODE = {
   INVALID_POLL_DATA: 400,
   UNAUTHORIZED: 401,
 };
 
-export const POST = async (req) => {
+export const POST = withAuth(async (req, context) => {
   try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get("pollify_token")?.value;
-    if (!token) {
-      return NextResponse.json({ code: 401, message: "Unauthorized" }, { status: 401 });
-    }
-
-    const payload = await verifyToken(token);
-    if (!payload || !payload.userId) {
-      return NextResponse.json({ code: 401, message: "Invalid token" }, { status: 401 });
-    }
+    const { userId } = context;
 
     let body;
     try {
@@ -28,13 +18,12 @@ export const POST = async (req) => {
       return NextResponse.json({ code: 400, message: "Invalid JSON" }, { status: 400 });
     }
 
-    const poll = await createPoll(payload.userId, body || {});
+    const poll = await createPoll(userId, body || {});
 
     return NextResponse.json(
       { code: 201, message: "Poll created successfully", data: poll },
       { status: 201 }
     );
-
   } catch (error) {
     const status = STATUS_BY_CODE[error.code] || 500;
 
@@ -44,4 +33,4 @@ export const POST = async (req) => {
     }
     return NextResponse.json({ code: status, message: error.message }, { status });
   }
-};
+});
