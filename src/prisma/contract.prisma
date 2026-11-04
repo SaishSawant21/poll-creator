@@ -78,4 +78,5 @@ model Vote {
 
   @@unique([pollId, userId])
   @@unique([pollId, voterToken])
-@@check(expression: sql`(('userId' IS NOT NULL)::int + ('voterToken' IS NOT NULL)::int) = 1`, name: "vote_identity_exactly_one")}
+  @@check(expression: sql`(("userId" IS NOT NULL)::int + ("voterToken" IS NOT NULL)::int) = 1`, name: "vote_identity_exactly_one")
+}

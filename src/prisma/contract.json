@@ -908,8 +908,8 @@
             "Vote": {
               "checks": [
                 {
-                  "expression": "(('userId' IS NOT NULL)::int + ('voterToken' IS NOT NULL)::int) = 1",
-                  "name": "vote_identity_exactly_one_ea6b91da",
+                  "expression": "((\"userId\" IS NOT NULL)::int + (\"voterToken\" IS NOT NULL)::int) = 1",
+                  "name": "vote_identity_exactly_one_cfd9d462",
                   "prefix": "vote_identity_exactly_one"
                 }
               ],
@@ -1092,7 +1092,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "f80bee6ac3758427ba5a9aea7db4ef340bddc6af153920de0d3eeda056283c4b"
+    "storageHash": "df5ccb82d1fa66826fd13bb15f1b3f887ec9cbcddf36d39d882c835aeb06d0da"
   },
   "capabilities": {
     "postgres": {
