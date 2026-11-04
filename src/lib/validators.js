@@ -32,3 +32,7 @@ export function isValidPollStatus(status) {
   const allowedStatuses = ['open', 'closed'];
   return allowedStatuses.includes(status);
 }
+
+export function isValidOptionId(optionId) {
+  return typeof optionId === 'number' && Number.isInteger(optionId) && optionId > 0;
+}
