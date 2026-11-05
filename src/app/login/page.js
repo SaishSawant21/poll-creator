@@ -12,11 +12,14 @@ import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../components/ui/card";
 import { apiClient } from "./../../lib/api-client";
+import { useAuth } from "../../hooks/use-auth";
 
 const LoginPage = () => {
+	
 	const router = useRouter();
 	const [serverError, setServerError] = useState("");
-
+	// If the user is logged in, redirect them to the dashboard
+	
 	const {
 		register,
 		handleSubmit,
@@ -39,6 +42,12 @@ const LoginPage = () => {
 			}
 		}
 	};
+	const { isLoading: isAuthLoading } = useAuth({
+		redirectTo: "/dashboard",
+		redirectIfFound: true
+	});
+
+	if (isAuthLoading) return null; 
 
 	return (
 		<div className="relative flex min-h-screen items-center justify-center p-4 bg-background overflow-hidden">
