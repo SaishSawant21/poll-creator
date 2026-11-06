@@ -189,3 +189,13 @@ export const getPollResults = async (slug) => {
 		options: formattedOptions,
 	};
 };
+
+export const getUserPolls = async (creatorId) => {
+	const polls = await db.orm.public.Poll
+		.where({ creatorId: creatorId })
+		.select('id', 'question', 'slug', 'status', 'visibility', 'createdAt')
+		.orderBy((poll) => poll.createdAt.desc())
+		.all();
+
+	return polls;
+};
