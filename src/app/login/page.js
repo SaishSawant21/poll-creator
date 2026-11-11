@@ -13,6 +13,7 @@ import { Label } from "../../components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../components/ui/card";
 import { apiClient } from "./../../lib/api-client";
 import { useAuth } from "../../hooks/use-auth";
+import { toast } from "sonner"; 
 
 const LoginPage = () => {
 	
@@ -31,15 +32,18 @@ const LoginPage = () => {
 
 		try {
 			await apiClient.post("/auth/login", data);
-
 			router.push("/dashboard");
-
+			toast.success("Login successful!");
 		} catch (error) {
+			let msg;
 			if (error.response && error.response.data && error.response.data.message) {
+				msg = error.response.data.message;
 				setServerError(error.response.data.message);
 			} else {
+				msg = "An unexpected error occurred.";
 				setServerError("An unexpected error occurred.");
 			}
+			toast.error("Login failed", { description: msg });
 		}
 	};
 	const { isLoading: isAuthLoading } = useAuth({

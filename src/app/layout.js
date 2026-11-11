@@ -1,5 +1,6 @@
 import { Inter, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "sonner";
 
 const inter = Inter({
   variable: "--font-sans", // This matches the variable in your globals.css
@@ -25,6 +26,7 @@ export default function RootLayout({ children }) {
     >
       <body className="min-h-full flex flex-col font-sans">
         {children}
+        <Toaster position="top-center" richColors closeButton />
       </body>
     </html>
   );
