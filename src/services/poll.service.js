@@ -19,6 +19,7 @@ export const createPoll = async (creatorId, data) => {
 			visibility: visibility ? visibility.toLowerCase() : 'public', // Force lowercase
 			votingMode: votingMode ? votingMode.toLowerCase() : 'anyone', // Force lowercase
 			status: 'draft',
+			creatorId,
 		})
 
 	const pollOptions = options.map((text, index) => ({
