@@ -65,10 +65,10 @@ export const updatePollStatus = async (creatorId, slug, newStatus) => {
 
 export const getPublicPolls = async () => {
 	const polls = await db.orm.public.Poll
-		// .where({
-		// 	status: 'open',
-		// 	visibility: 'public'
-		// })
+		.where({
+			status: 'open',
+			visibility: 'public'
+		})
 		.select('id', 'question', 'slug', 'description', 'createdAt')
 		.orderBy((poll) => poll.createdAt.desc())
 		.all();
