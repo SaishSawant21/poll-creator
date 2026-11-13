@@ -151,3 +151,11 @@
     @apply font-sans;
   }
 }
+
+button{
+  cursor: pointer !important;
+}
+
+button:disabled {
+  cursor: not-allowed !important;
+}
