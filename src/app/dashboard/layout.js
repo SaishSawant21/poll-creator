@@ -1,23 +1,17 @@
 "use client";
 
+import { Suspense, useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation"; // Added useRouter
-import { BarChart3, PlusCircle, LayoutDashboard, Settings, LogOut, Loader2 } from "lucide-react"; // Added Loader2
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { BarChart3, LogOut, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { apiClient } from "../../lib/api-client"; // Adjust path if needed
+import { apiClient } from "../../lib/api-client";
 import { Button } from "../../components/ui/button";
+import SidebarNav from "../../components/dashboard/sidebar-nav"; // Import the new component
 
 const DashboardLayout = ({ children }) => {
-  const pathname = usePathname();
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-
-  const navItems = [
-    { name: "My Polls", href: "/dashboard", icon: LayoutDashboard },
-    { name: "Create Poll", href: "/dashboard/polls/new", icon: PlusCircle },
-    { name: "Settings", href: "/dashboard/settings", icon: Settings },
-  ];
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -42,27 +36,12 @@ const DashboardLayout = ({ children }) => {
           </Link>
         </div>
 
-        <nav className="flex-1 p-4 space-y-2">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = pathname === item.href;
-
-            return (
-              <Link key={item.name} href={item.href}>
-                <Button
-                  variant={isActive ? "secondary" : "ghost"}
-                  className={`w-full justify-start gap-3 h-11 ${isActive ? "bg-primary/10 text-primary hover:bg-primary/15" : ""}`}
-                >
-                  <Icon className="w-5 h-5" />
-                  {item.name}
-                </Button>
-              </Link>
-            );
-          })}
-        </nav>
+        {/* Wrap the navigation in Suspense */}
+        <Suspense fallback={<div className="flex-1 p-4 space-y-2 animate-pulse bg-muted/10" />}>
+          <SidebarNav />
+        </Suspense>
 
         <div className="p-4 border-t border-border/50">
-          {/* Connect the logout button */}
           <Button
             variant="ghost"
             onClick={handleLogout}
@@ -96,5 +75,5 @@ const DashboardLayout = ({ children }) => {
       </main>
     </div>
   );
-}
+};
 export default DashboardLayout;

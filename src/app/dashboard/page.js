@@ -27,7 +27,6 @@ const DashboardPage = () => {
     fetchPolls();
   }, []);
 
-  // Loading State
   if (isLoading) {
     return (
       <div className="flex h-[50vh] items-center justify-center">
@@ -38,7 +37,7 @@ const DashboardPage = () => {
 
   return (
     <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      
+
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -59,7 +58,6 @@ const DashboardPage = () => {
         </div>
       )}
 
-      {/* Empty State */}
       {polls.length === 0 && !error ? (
         <div className="flex flex-col items-center justify-center p-12 text-center border-2 border-dashed rounded-xl border-border/50 bg-card/50">
           <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
@@ -77,29 +75,30 @@ const DashboardPage = () => {
         /* Polls Grid */
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {polls.map((poll) => (
-            <Card key={poll.id} className="hover:border-primary/50 transition-colors cursor-pointer group shadow-sm hover:shadow-md">
-              <CardHeader className="pb-3">
-                <div className="flex justify-between items-start gap-4">
-                  <CardTitle className="text-lg leading-tight group-hover:text-primary transition-colors">
-                    {poll.question}
-                  </CardTitle>
-                  <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                    poll.status === 'open' ? 'bg-green-500/10 text-green-600' : 
-                    poll.status === 'draft' ? 'bg-zinc-500/10 text-zinc-600' : 
-                    'bg-red-500/10 text-red-600'
-                  }`}>
-                    {poll.status.toUpperCase()}
-                  </span>
-                </div>
-                <CardDescription>Created {new Date(poll.createdAt).toLocaleDateString()}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Slug</span>
-                  <span className="font-mono text-xs bg-muted px-2 py-1 rounded">{poll.slug}</span>
-                </div>
-              </CardContent>
-            </Card>
+            <Link href={`/dashboard/polls/${poll.slug}`} key={poll.id}>
+              <Card className="hover:border-primary/50 transition-colors cursor-pointer group shadow-sm hover:shadow-md h-full">
+                <CardHeader className="pb-3">
+                  <div className="flex justify-between items-start gap-4">
+                    <CardTitle className="text-lg leading-tight group-hover:text-primary transition-colors">
+                      {poll.question}
+                    </CardTitle>
+                    <span className={`text-xs px-2 py-1 rounded-full font-medium ${poll.status === 'open' ? 'bg-green-500/10 text-green-600' :
+                      poll.status === 'draft' ? 'bg-zinc-500/10 text-zinc-600' :
+                        'bg-red-500/10 text-red-600'
+                      }`}>
+                      {poll.status.toUpperCase()}
+                    </span>
+                  </div>
+                  <CardDescription>Created {new Date(poll.createdAt).toLocaleDateString()}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Slug</span>
+                    <span className="font-mono text-xs bg-muted px-2 py-1 rounded">{poll.slug}</span>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
       )}
