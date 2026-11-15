@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { PlusCircle, Loader2, FileQuestion } from "lucide-react";
+import { PlusCircle, Loader2, FileQuestion, BarChart2 } from "lucide-react"; // Added BarChart2
 import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../components/ui/card";
 import { apiClient } from "../../lib/api-client";
@@ -58,6 +58,7 @@ const DashboardPage = () => {
         </div>
       )}
 
+      {/* Empty State */}
       {polls.length === 0 && !error ? (
         <div className="flex flex-col items-center justify-center p-12 text-center border-2 border-dashed rounded-xl border-border/50 bg-card/50">
           <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
@@ -76,25 +77,28 @@ const DashboardPage = () => {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {polls.map((poll) => (
             <Link href={`/dashboard/polls/${poll.slug}`} key={poll.id}>
-              <Card className="hover:border-primary/50 transition-colors cursor-pointer group shadow-sm hover:shadow-md h-full">
-                <CardHeader className="pb-3">
+              <Card className="hover:border-primary/50 transition-colors cursor-pointer group shadow-sm hover:shadow-md h-full flex flex-col">
+                <CardHeader className="pb-3 flex-1">
                   <div className="flex justify-between items-start gap-4">
-                    <CardTitle className="text-lg leading-tight group-hover:text-primary transition-colors">
+                    <CardTitle className="text-lg leading-tight group-hover:text-primary transition-colors line-clamp-2">
                       {poll.question}
                     </CardTitle>
-                    <span className={`text-xs px-2 py-1 rounded-full font-medium ${poll.status === 'open' ? 'bg-green-500/10 text-green-600' :
-                      poll.status === 'draft' ? 'bg-zinc-500/10 text-zinc-600' :
-                        'bg-red-500/10 text-red-600'
+                    <span className={`text-[10px] uppercase tracking-wider px-2 py-1 rounded-full font-bold shrink-0 ${poll.status === 'open' ? 'bg-green-500/10 text-green-600' :
+                        poll.status === 'draft' ? 'bg-zinc-500/10 text-zinc-600' :
+                          'bg-red-500/10 text-red-600'
                       }`}>
-                      {poll.status.toUpperCase()}
+                      {poll.status}
                     </span>
                   </div>
                   <CardDescription>Created {new Date(poll.createdAt).toLocaleDateString()}</CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Slug</span>
-                    <span className="font-mono text-xs bg-muted px-2 py-1 rounded">{poll.slug}</span>
+                <CardContent className="pt-0">
+                  <div className="flex items-center justify-between text-sm border-t border-border/50 pt-4 mt-2">
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <BarChart2 className="w-4 h-4" />
+                      <span>Votes</span>
+                    </div>
+                    <span className="font-bold text-foreground text-base">{poll.voteCount}</span>
                   </div>
                 </CardContent>
               </Card>
@@ -104,5 +108,5 @@ const DashboardPage = () => {
       )}
     </div>
   );
-}
-export default DashboardPage; 
+};
+export default DashboardPage;

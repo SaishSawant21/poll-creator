@@ -193,10 +193,31 @@ export const getPollResults = async (slug) => {
 
 export const getUserPolls = async (creatorId) => {
 	const polls = await db.orm.public.Poll
-		.where({ creatorId: creatorId })
-		.select('id', 'question', 'slug', 'status', 'visibility', 'createdAt')
+		.where({ creatorId })
+		.select('id', 'question', 'slug', 'status', 'createdAt')
+		.include('votes', (votes) => votes.select('id')) // Include votes to count them
 		.orderBy((poll) => poll.createdAt.desc())
 		.all();
 
-	return polls;
+	return polls.map((poll) => {
+		const { votes, ...pollData } = poll;
+		return {
+			...pollData,
+			voteCount: votes?.length || 0,
+		};
+	});
+};
+
+export const checkIfVoted = async (pollId, userId, voterToken) => {
+	if (!userId && !voterToken) return false;
+
+	const vote = await db.orm.public.Vote
+		.where(
+			userId
+				? { pollId, userId }
+				: { pollId, voterToken }
+		)
+		.first();
+
+	return !!vote;
 };
