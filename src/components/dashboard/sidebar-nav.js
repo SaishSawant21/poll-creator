@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, PlusCircle, LayoutDashboard, Settings } from "lucide-react";
+import { BarChart3, PlusCircle, LayoutDashboard, Settings, Compass } from "lucide-react";
 import { Button } from "../ui/button"; // Adjust path if needed
 
 export default function SidebarNav() {
@@ -11,6 +11,7 @@ export default function SidebarNav() {
   const navItems = [
     { name: "My Polls", href: "/dashboard", icon: LayoutDashboard },
     { name: "Create Poll", href: "/dashboard/polls/new", icon: PlusCircle },
+    { name: "Explore Public Polls", href: "/explore", icon: Compass },
     { name: "Settings", href: "/dashboard/settings", icon: Settings },
   ];
 
