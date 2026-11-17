@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Loader2, BarChart3, ArrowRight, Compass } from "lucide-react";
 import { apiClient } from "../../lib/api-client";
-import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../components/ui/card";
 import PublicHeader from "../../components/public-header";
 
@@ -38,14 +37,12 @@ const ExplorePage = () => {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Background Blobs */}
-			<PublicHeader /> {/* <-- Added Header */}
+      <PublicHeader />
 
       <div className="absolute top-0 left-[-10%] w-[30%] h-[30%] bg-primary/20 blur-[120px] rounded-full" />
       <div className="absolute bottom-0 right-[-10%] w-[30%] h-[30%] bg-blue-500/20 blur-[120px] rounded-full" />
 
       <div className="max-w-6xl mx-auto p-6 md:p-12 relative z-10">
-        {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
           <div>
             <div className="flex items-center gap-2 text-primary font-semibold mb-2">
@@ -57,12 +54,7 @@ const ExplorePage = () => {
               Vote on polls created by the community, or sign in to create your own.
             </p>
           </div>
-          <Link href="/login">
-            <Button variant="outline" className="gap-2">
-              Sign in to Pollify
-              <ArrowRight className="w-4 h-4" />
-            </Button>
-          </Link>
+          {/* The hardcoded Sign In button is removed here */}
         </div>
 
         {error && (
@@ -115,4 +107,5 @@ const ExplorePage = () => {
     </div>
   );
 };
+
 export default ExplorePage;
