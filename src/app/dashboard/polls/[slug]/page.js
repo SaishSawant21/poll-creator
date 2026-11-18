@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState, Suspense } from "react";
-import { useParams, useRouter } from "next/navigation"; // <-- Added useRouter
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Loader2, Play, Square } from "lucide-react";
+import { ArrowLeft, Loader2, Play, Square, Copy, Check, Link as LinkIcon } from "lucide-react"; // <-- Added Copy, Check, LinkIcon
 import { toast } from "sonner";
 import { apiClient } from "../../../../lib/api-client";
 import { Button } from "../../../../components/ui/button";
@@ -12,13 +12,14 @@ import PollResults from "../../../../components/polls/PollResults";
 
 const PollDetailsContent = () => {
   const params = useParams();
-  const router = useRouter(); // <-- Initialized router
+  const router = useRouter();
   const slug = params.slug;
 
   const [poll, setPoll] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
+  const [copied, setCopied] = useState(false); // <-- New state for copy feedback
 
   useEffect(() => {
     const fetchPoll = async () => {
@@ -39,17 +40,24 @@ const PollDetailsContent = () => {
     try {
       await apiClient.patch(`/polls/${slug}/status`, { status: newStatus });
       setPoll((prev) => ({ ...prev, status: newStatus }));
-
-      // Show toast BEFORE redirecting
       toast.success(`Poll ${newStatus === 'open' ? 'published' : 'closed'} successfully!`);
-
-      // Redirect back to dashboard
       router.push(`/dashboard`);
     } catch (err) {
       toast.error("Failed to update status.");
     } finally {
       setIsUpdating(false);
     }
+  };
+
+  // <-- New function to handle copying the link
+  const handleCopyLink = () => {
+    const publicUrl = `${window.location.origin}/p/${slug}`;
+    navigator.clipboard.writeText(publicUrl);
+    setCopied(true);
+    toast.success("Link copied to clipboard!");
+
+    // Reset the checkmark icon after 2 seconds
+    setTimeout(() => setCopied(false), 2000);
   };
 
   if (isLoading) {
@@ -70,6 +78,9 @@ const PollDetailsContent = () => {
       </div>
     );
   }
+
+  // <-- Construct the public URL for display
+  const publicUrl = typeof window !== "undefined" ? `${window.location.origin}/p/${slug}` : "";
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -105,6 +116,34 @@ const PollDetailsContent = () => {
                 {isUpdating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Square className="w-4 h-4" />} Close Poll
               </Button>
             )}
+          </div>
+
+          {/* <-- New Share Link Section --> */}
+          <div className="bg-muted/30 border border-border/50 rounded-lg p-4 space-y-3">
+            <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+              <LinkIcon className="w-4 h-4" />
+              Share this poll
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <div className="flex-1 bg-background border border-border/50 rounded-md px-3 py-2 text-sm font-mono text-muted-foreground truncate">
+                {publicUrl}
+              </div>
+              <Button
+                onClick={handleCopyLink}
+                variant={copied ? "default" : "secondary"}
+                className="gap-2 shrink-0 min-w-[120px]"
+              >
+                {copied ? (
+                  <>
+                    <Check className="w-4 h-4" /> Copied!
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-4 h-4" /> Copy Link
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
 
           {poll.status === 'draft' && (
