@@ -182,5 +182,4 @@ const PollDetailsPage = () => {
     </Suspense>
   );
 };
-
 export default PollDetailsPage;
