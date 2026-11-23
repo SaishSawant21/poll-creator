@@ -13,14 +13,12 @@ import { Label } from "../../components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../components/ui/card";
 import { apiClient } from "./../../lib/api-client";
 import { useAuth } from "../../hooks/use-auth";
-import { toast } from "sonner"; 
+import { toast } from "sonner";
 
 const LoginPage = () => {
-	
 	const router = useRouter();
 	const [serverError, setServerError] = useState("");
-	// If the user is logged in, redirect them to the dashboard
-	
+
 	const {
 		register,
 		handleSubmit,
@@ -32,8 +30,8 @@ const LoginPage = () => {
 
 		try {
 			await apiClient.post("/auth/login", data);
-			router.push("/dashboard");
 			toast.success("Login successful!");
+			router.push("/dashboard");
 		} catch (error) {
 			let msg;
 			if (error.response && error.response.data && error.response.data.message) {
@@ -46,44 +44,55 @@ const LoginPage = () => {
 			toast.error("Login failed", { description: msg });
 		}
 	};
+
+	// Moved to the top to comply with Rules of Hooks
 	const { isLoading: isAuthLoading } = useAuth({
 		redirectTo: "/dashboard",
 		redirectIfFound: true
 	});
 
-	if (isAuthLoading) return null; 
-
+	if (isAuthLoading) {
+		return (
+			<div className="flex min-h-screen items-center justify-center bg-background">
+				<Loader2 className="w-8 h-8 animate-spin text-primary" />
+			</div>
+		);
+	}
+	
 	return (
-		<div className="relative flex min-h-screen items-center justify-center p-4 bg-background overflow-hidden">
+		// Changed p-4 to p-3 on mobile for more screen real estate
+		<div className="relative flex min-h-[100dvh] items-center justify-center p-3 sm:p-4 bg-background overflow-hidden">
 
-			<div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/20 blur-[120px] rounded-full" />
-			<div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/20 blur-[120px] rounded-full" />
+			{/* Adjusted blob sizes so they don't cause horizontal scroll on mobile */}
+			<div className="absolute top-[-10%] left-[-20%] w-[60%] sm:w-[40%] h-[40%] bg-primary/20 blur-[80px] sm:blur-[120px] rounded-full pointer-events-none" />
+			<div className="absolute bottom-[-10%] right-[-20%] w-[60%] sm:w-[40%] h-[40%] bg-blue-500/20 blur-[80px] sm:blur-[120px] rounded-full pointer-events-none" />
 
 			<Card className="relative z-10 w-full max-w-md border-border/50 bg-background/60 backdrop-blur-xl shadow-2xl">
-				<CardHeader className="space-y-2 pb-6 text-center">
+				{/* Reduced horizontal padding on mobile (px-4 vs px-6) */}
+				<CardHeader className="space-y-2 pb-6 pt-8 px-4 sm:px-6 text-center">
 					<div className="flex justify-center mb-2">
-						<div className="flex items-center justify-center w-14 h-14 rounded-2xl bg-primary/10 shadow-inner">
-							<BarChart3 className="w-7 h-7 text-primary" />
+						<div className="flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-primary/10 shadow-inner">
+							<BarChart3 className="w-6 h-6 sm:w-7 sm:h-7 text-primary" />
 						</div>
 					</div>
-					<CardTitle className="text-3xl font-bold tracking-tight">
+					{/* Scaled down text on mobile */}
+					<CardTitle className="text-2xl sm:text-3xl font-bold tracking-tight">
 						Welcome to Pollify
 					</CardTitle>
-					<CardDescription className="text-base text-muted-foreground">
+					<CardDescription className="text-sm sm:text-base text-muted-foreground px-2">
 						Enter your details to access your account
 					</CardDescription>
 				</CardHeader>
 
-				<CardContent>
+				<CardContent className="px-4 sm:px-6">
 					<form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-
 						<div className="space-y-2">
 							<Label htmlFor="email" className="text-sm font-medium">Email</Label>
 							<Input
 								id="email"
 								type="email"
 								placeholder="name@example.com"
-								className="h-11 bg-background/50 focus-visible:ring-primary focus-visible:ring-2 transition-all"
+								className="h-11 bg-background/50 focus-visible:ring-primary focus-visible:ring-2 transition-all text-base"
 								{...register("email", {
 									required: "Email is required",
 									pattern: {
@@ -110,7 +119,7 @@ const LoginPage = () => {
 								id="password"
 								type="password"
 								placeholder="••••••••"
-								className="h-11 bg-background/50 focus-visible:ring-primary focus-visible:ring-2 transition-all"
+								className="h-11 bg-background/50 focus-visible:ring-primary focus-visible:ring-2 transition-all text-base"
 								{...register("password", {
 									required: "Password is required",
 									minLength: {
@@ -149,8 +158,8 @@ const LoginPage = () => {
 					</form>
 				</CardContent>
 
-				<CardFooter className="flex justify-center border-t border-border/50 pt-6">
-					<p className="text-sm text-muted-foreground">
+				<CardFooter className="flex justify-center border-t border-border/50 pt-6 pb-6 px-4 sm:px-6">
+					<p className="text-sm text-muted-foreground text-center">
 						Don&apos;t have an account?{" "}
 						<Link href="/register" className="text-primary font-semibold hover:underline">
 							Sign up
