@@ -12,18 +12,28 @@ const SettingsPage = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+
     const fetchUser = async () => {
       try {
-        const response = await apiClient.get("/auth/me");
+        const response = await apiClient.get("/auth/me", { signal });
         setUser(response.data);
       } catch (err) {
+        if (err.name === 'CanceledError' || err.code === 'ERR_CANCELED') return;
         toast.error("Failed to load profile data.");
       } finally {
-        setIsLoading(false);
+        if (!signal.aborted) {
+          setIsLoading(false);
+        }
       }
     };
 
     fetchUser();
+
+    return () => {
+      controller.abort();
+    };
   }, []);
 
   if (isLoading) {

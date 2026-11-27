@@ -10,6 +10,8 @@ export const useAuth = ({ redirectTo = null, redirectIfFound = false } = {}) => 
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const controller = new AbortController();
+    const signal = controller.signal;
     const checkAuth = async () => {
       try {
         const response = await apiClient.get("/auth/me");
@@ -25,11 +27,12 @@ export const useAuth = ({ redirectTo = null, redirectIfFound = false } = {}) => 
           router.push(redirectTo);
         }
       } finally {
-        setIsLoading(false);
-      }
+        if (!signal.aborted) setIsLoading(false);      }
     };
 
     checkAuth();
+
+    return () => controller.abort();
   }, [router, redirectTo, redirectIfFound, pathname]);
 
   return { user, isLoading };
